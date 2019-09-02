@@ -3,11 +3,8 @@ part 'config.g.dart';
 
 @JsonSerializable(createToJson: false)
 class Config {
-  final String oneSignalId;
-  final String admobId;
-  final String androidUnitId;
-  final String iosUnitId;
+  final String baseUrl;
 
-  Config(this.oneSignalId, this.admobId, this.androidUnitId, this.iosUnitId);
+  Config(this.baseUrl);
   factory Config.fromJson(Map<String, dynamic> json) => _$ConfigFromJson(json);
 }

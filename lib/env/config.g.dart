@@ -7,6 +7,5 @@ part of 'config.dart';
 // **************************************************************************
 
 Config _$ConfigFromJson(Map<String, dynamic> json) {
-  return Config(json['oneSignalId'] as String, json['admobId'] as String,
-      json['androidUnitId'] as String, json['iosUnitId'] as String);
+  return Config(json['baseUrl'] as String);
 }
