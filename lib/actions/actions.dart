@@ -1,8 +1,7 @@
 import 'package:flutter_kickstart/models/models.dart';
 
-class ReceiveServiceList{
-  final List<Service> services;
+class SetGlobalUser{
+  User user;
 
-  ReceiveServiceList(this.services);
-
+  SetGlobalUser(this.user);
 }

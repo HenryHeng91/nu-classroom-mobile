@@ -10,13 +10,5 @@ import 'package:http/http.dart' as http;
 import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> getServiceList = (Store<AppState> store) async {
-  var appConfig = Config.fromJson(config);
-  var response = await http.get("${appConfig.baseUrl}api/service");
-  final json = jsonDecode(response.body);
-  ServiceResponse serviceResponse = ServiceResponse.fromJson(json);
-  if(serviceResponse.success){
-    List<Service> services = serviceResponse.result;
-    print(services);
-    store.dispatch(ReceiveServiceList(services));
-  }
+
 };

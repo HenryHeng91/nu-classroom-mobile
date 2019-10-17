@@ -4,8 +4,8 @@ import 'models.dart';
 
 @immutable
 class AppState{
-  List<Service> services;
+  User user;
 
-  AppState(this.services);
+  AppState(this.user);
 
 }

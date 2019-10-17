@@ -6,4 +6,6 @@ part of 'dev.dart';
 // JsonLiteralGenerator
 // **************************************************************************
 
-const _$configJsonLiteral = {'baseUrl': 'http://www.eagleappprotech.com/'};
+const _$configJsonLiteral = {
+  'baseUrl': 'https://nu-classroom.000webhostapp.com'
+};

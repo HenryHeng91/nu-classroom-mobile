@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+
+    <string name="app_name">Norton Classroom Mobile App</string>
+    <string name="FACEBOOK_APP_ID">503015037117459</string>
+    <string name="ACCOUNT_KIT_CLIENT_TOKEN">2fc13e288da476d5dcfb18263e7a858c</string>
+
+</resources>

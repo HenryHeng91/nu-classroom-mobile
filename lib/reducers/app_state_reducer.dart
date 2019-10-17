@@ -3,6 +3,6 @@ import 'package:flutter_kickstart/reducers/service_reducer.dart';
 
 AppState appStateReducer(AppState state,dynamic action){
   return AppState(
-    serviceReducer(state.services,action)
+    userReducer(state.user,action)
   );
 }

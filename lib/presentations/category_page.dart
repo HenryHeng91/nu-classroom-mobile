@@ -10,14 +10,14 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:http/http.dart' as http;
 
-class PostToClassPage extends StatefulWidget{
+class CategoryPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _PostToClassPageState();
+    return _CategoryPageState();
   }
 }
 
-class _PostToClassPageState extends State<PostToClassPage>{
+class _CategoryPageState extends State<CategoryPage>{
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
@@ -37,26 +37,26 @@ class _PostToClassPageState extends State<PostToClassPage>{
                     children: <Widget>[
                       Container(
                         child: Text(
-                            "Recent:"
+                            "Category:"
                         ),
                         padding: EdgeInsets.only(
                           bottom: 15,
                         ),
                       ),
                       FutureBuilder(
-                        future: _loadClass(context, viewModel.user, filter.all, 1),
-                        builder: (context, AsyncSnapshot<List<Class>> snapshot){
+                        future: _loadCategory(context, viewModel.user, filter.all, 1),
+                        builder: (context, AsyncSnapshot<List<Category>> snapshot){
                           if(snapshot.hasData && !snapshot.hasError && snapshot.data !=null){
-                            var classes = snapshot.data;
+                            var categories = snapshot.data;
                             return ListView.separated(
-                              itemCount: classes.length,
+                              itemCount: categories.length,
                               physics: ClampingScrollPhysics(),
                               shrinkWrap: true,
                               itemBuilder: (context,index){
                                 return InkWell(
                                   child: Container(
                                     child: Text(
-                                      classes[index].classTitle,
+                                      categories[index].name,
                                       style: TextStyle(
                                         fontSize: 20
                                       ),
@@ -67,7 +67,10 @@ class _PostToClassPageState extends State<PostToClassPage>{
                                     ),
                                   ),
                                   onTap: (){
-                                    Navigator.of(context).pop(classes[index].id);
+                                    Navigator.of(context).pop({
+                                      "name":categories[index].name,
+                                      "id":categories[index].guid
+                                    });
                                   },
                                 );
                               },
@@ -82,55 +85,6 @@ class _PostToClassPageState extends State<PostToClassPage>{
                     ],
                   )
                 ),
-                Container(
-                  padding: EdgeInsets.all(15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          child: Text(
-                            "Created:",
-                          ),
-                          padding: EdgeInsets.only(
-                            bottom: 15
-                          ),
-                        ),
-                        FutureBuilder(
-                          future: _loadClass(context, viewModel.user, filter.created, 1),
-                          builder: (context, AsyncSnapshot<List<Class>> snapshot){
-                            if(snapshot.hasData && !snapshot.hasError && snapshot.data !=null){
-                              var classes = snapshot.data;
-                              return ListView.builder(
-                                itemCount: classes.length,
-                                physics: ClampingScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (context,index){
-                                  return InkWell(
-                                    child: Container(
-                                      child: Text(
-                                        classes[index].classTitle,
-                                        style: TextStyle(
-                                            fontSize: 20
-                                        ),
-                                      ),
-                                      padding: EdgeInsets.only(
-                                          bottom: 15,
-                                          top: 15
-                                      ),
-                                    ),
-                                    onTap: (){
-                                      Navigator.of(context).pop([classes[index].id]);
-                                    },
-                                  );
-                                },
-                              );
-                            }
-                            return CircularProgressIndicator();
-                          },
-                        ),
-                      ],
-                    )
-                )
               ],
             ),
           ),
@@ -142,7 +96,7 @@ class _PostToClassPageState extends State<PostToClassPage>{
   AppBar _buildAppBar(){
     return AppBar(
       title: new Text(
-        "Post to Class",
+        "Choose Category",
         style: TextStyle(
             fontSize: 24
         ),
@@ -153,10 +107,10 @@ class _PostToClassPageState extends State<PostToClassPage>{
     );
   }
 
-  Future<List<Class>> _loadClass(BuildContext context, User user, filter classFilter,int page)async{
-    List<Class> classes = await ClassAPIClient.loadClass(context, user, classFilter, page);
-    if(classes != null) {
-      return classes;
+  Future<List<Category>> _loadCategory(BuildContext context, User user, filter classFilter,int page)async{
+    List<Category> categories = await ClassAPIClient.loadCategory(context, user);
+    if(categories != null) {
+      return categories;
     }
     return List();
   }

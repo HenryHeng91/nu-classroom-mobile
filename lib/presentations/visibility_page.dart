@@ -2,27 +2,23 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_kickstart/api_client/class_api_client.dart';
 import 'package:flutter_kickstart/config_wrapper.dart';
+import 'package:flutter_kickstart/containers/action_item.dart';
 import 'package:flutter_kickstart/models/app_state.dart';
 import 'package:flutter_kickstart/models/models.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:http/http.dart' as http;
 
-enum filter {
-  all,
-  created,
-  joined
-}
-
-class PostToClassPage extends StatefulWidget{
+class VisibilityPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _PostToClassPageState();
+    return _VisibilityPageState();
   }
 }
 
-class _PostToClassPageState extends State<PostToClassPage>{
+class _VisibilityPageState extends State<VisibilityPage>{
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
@@ -31,62 +27,38 @@ class _PostToClassPageState extends State<PostToClassPage>{
       builder: (context, _ViewModel viewModel){
         return Scaffold(
           appBar: _buildAppBar(),
-          body: SingleChildScrollView(
+          body: Container(
+            padding: EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      Text("Recent"),
-                      FutureBuilder(
-                        future: _loadClass(context, viewModel.user, filter.all, 1),
-                        builder: (context, AsyncSnapshot<List<Class>> snapshot){
-                          if(snapshot.hasData && !snapshot.hasError && snapshot.data !=null){
-                            var classes = snapshot.data;
-                            return ListView.builder(
-                              itemCount: classes.length,
-                              itemBuilder: (context,index){
-                                return ListTile(
-                                  title: Text(classes[index].classTitle),
-                                  onTap: (){
-                                    Navigator.of(context).pop(classes[index].id);
-                                  },
-                                );
-                              },
-                            );
-                          }
-                          return SizedBox.shrink();
-                        },
-                      ),
-                    ],
-                  )
+                ActionItem(
+                  icon: ImageIcon(
+                      AssetImage("assets/icons/public.png")
+                  ),
+                  title: "Public",
+                  onTap: (){
+                    Navigator.of(context).pop("PUBLIC");
+                  },
                 ),
-                Container(
-                    child: Column(
-                      children: <Widget>[
-                        Text("Created"),
-                        FutureBuilder(
-                          future: _loadClass(context, viewModel.user, filter.created, 1),
-                          builder: (context, AsyncSnapshot<List<Class>> snapshot){
-                            if(snapshot.hasData && !snapshot.hasError && snapshot.data !=null){
-                              var classes = snapshot.data;
-                              return ListView.builder(
-                                itemCount: classes.length,
-                                itemBuilder: (context,index){
-                                  return ListTile(
-                                    title: Text(classes[index].classTitle),
-                                    onTap: (){
-                                      Navigator.of(context).pop([classes[index].id]);
-                                    },
-                                  );
-                                },
-                              );
-                            }
-                            return SizedBox.shrink();
-                          },
-                        ),
-                      ],
-                    )
+                Divider(),
+                ActionItem(
+                  icon: ImageIcon(
+                      AssetImage("assets/icons/group.png")
+                  ),
+                  title: "Classmate",
+                  onTap: (){
+                    Navigator.of(context).pop("TEAM");
+                  },
+                ),
+                Divider(),
+                ActionItem(
+                  icon: ImageIcon(
+                      AssetImage("assets/icons/user.png")
+                  ),
+                  title: "Only me",
+                  onTap: (){
+                    Navigator.of(context).pop("PRIVATE");
+                  },
                 )
               ],
             ),
@@ -99,7 +71,7 @@ class _PostToClassPageState extends State<PostToClassPage>{
   AppBar _buildAppBar(){
     return AppBar(
       title: new Text(
-        "Post to Class",
+        "Visibility",
         style: TextStyle(
             fontSize: 24
         ),
@@ -111,27 +83,7 @@ class _PostToClassPageState extends State<PostToClassPage>{
   }
 
   Future<List<Class>> _loadClass(BuildContext context, User user, filter classFilter,int page)async{
-    String url = ConfigWrapper.of(context).baseUrl;
-    url = "$url/api/v1/classes";
-    if(classFilter == filter.created){
-      url = "$url/created";
-    }else if(classFilter == filter.joined){
-      url = "$url/joined";
-    }
-
-    var response = await http.get(
-        url,
-        headers: {
-          "access-token": user.accessToken
-        }
-    );
-    if(response.statusCode == 200) {
-      var json = jsonDecode(response.body)['data'] as List;
-      List<Class> classes = json.map((classJson){
-        return Class.fromJson(classJson);
-      }).toList();
-      return classes;
-    }
+    return await ClassAPIClient.loadClass(context, user, classFilter, page);
   }
 }
 
