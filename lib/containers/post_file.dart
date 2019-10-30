@@ -44,16 +44,16 @@ class PostFile extends StatelessWidget{
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "File.pdf",
+                      post.file.file_name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                    Text(
-                      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et",
-                      maxLines: postFileSize == PostFileSize.big ? 3 : 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+//                    Text(
+//                      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et",
+//                      maxLines: postFileSize == PostFileSize.big ? 3 : 1,
+//                      overflow: TextOverflow.ellipsis,
+//                    ),
                     Text(
                       "Size: 4.3MB",
                       style: TextStyle(

@@ -3,6 +3,7 @@ import 'package:flutter_kickstart/containers/post_file.dart';
 import 'package:flutter_kickstart/containers/post_question.dart';
 import 'package:flutter_kickstart/containers/post_status.dart';
 import 'package:flutter_kickstart/models/models.dart';
+import 'package:flutter_kickstart/presentations/take_exam.dart';
 
 class PostExam extends StatelessWidget{
   final Post post;
@@ -17,7 +18,7 @@ class PostExam extends StatelessWidget{
           children: <Widget>[
             Container(
               child: Text(
-                "MBA Y1S2 Midterm Exam",
+                post.classwork.title,
                 style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.bold
@@ -28,7 +29,7 @@ class PostExam extends StatelessWidget{
             ),
             Padding(
               child: PostStatus(
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat",
+                post.classwork.description,
                 trimMode: TrimMode.Line,
                 trimLines: 2,
                 textAlign: TextAlign.center,
@@ -52,7 +53,7 @@ class PostExam extends StatelessWidget{
             ),
             Padding(
               child: Text(
-                "Duration: 1h 30mn",
+                "Duration: ${post.classwork.examDuration}",
                 style: TextStyle(
                     fontWeight: FontWeight.bold
                 ),
@@ -65,7 +66,7 @@ class PostExam extends StatelessWidget{
             ),
             Padding(
               child: Text(
-                "Deadline: 20 June 2019 (1 month left)",
+                "Deadline: ${post.classwork.endDate}",
                 style: TextStyle(
                     fontWeight: FontWeight.bold
                 ),
@@ -75,43 +76,50 @@ class PostExam extends StatelessWidget{
                   right: 10
               ),
             ),
-            Padding(
-              child: Text(
-                "Submitted: 19/20 people",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-              padding: EdgeInsets.only(
-                  left: 10,
-                  right: 10,
-                  bottom: 10
-              ),
-            ),
+//            Padding(
+//              child: Text(
+//                "Submitted: 19/20 people",
+//                style: TextStyle(
+//                    fontWeight: FontWeight.bold
+//                ),
+//              ),
+//              padding: EdgeInsets.only(
+//                  left: 10,
+//                  right: 10,
+//                  bottom: 10
+//              ),
+//            ),
             Padding(
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: Container(
-                      child: Material(
-                        color: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30))
-                        ),
-                        child: Container(
-                          child: Text(
-                            "Take exam",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white
-                            ),
+                    child: InkWell(
+                      child: Container(
+                        child: Material(
+                          color: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30))
                           ),
-                          padding: EdgeInsets.all(5),
+                          child: Container(
+                            child: Text(
+                              "Take exam",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.white
+                              ),
+                            ),
+                            padding: EdgeInsets.all(5),
+                          ),
+                        ),
+                        margin: EdgeInsets.only(
+                            right: 10
                         ),
                       ),
-                      margin: EdgeInsets.only(
-                          right: 10
-                      ),
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context)=>TakeExam(createClasswork: post.classwork,)
+                        ));
+                      },
                     ),
                   ),
                   Expanded(

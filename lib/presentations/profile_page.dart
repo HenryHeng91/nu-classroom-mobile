@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_account_kit/flutter_account_kit.dart';
+import 'package:flutter_kickstart/actions/actions.dart';
 import 'package:flutter_kickstart/api_client/user_api_client.dart';
 import 'package:flutter_kickstart/config_wrapper.dart';
 import 'package:flutter_kickstart/containers/bottom_sheet_photo.dart';
@@ -111,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage>{
                           _image = await ImagePicker.pickImage(source: ImageSource.gallery);
                           profileStream.add(_image);
                           Navigator.of(context).pop();
-                          _uploadProfile(context, _image, viewModel.user);
+                          _uploadProfile(_image, viewModel.user);
                         },
                       );
                     }
@@ -151,12 +154,30 @@ class _ProfilePageState extends State<ProfilePage>{
                       ),
                       name: "My Classes",
                     ),
-                    ProfileActionButton(
-                      icon: ImageIcon(
-                        AssetImage("assets/icons/more.png"),
-                        size: 50,
+                    PopupMenuButton(
+                      child: ProfileActionButton(
+                        icon: ImageIcon(
+                          AssetImage("assets/icons/more.png"),
+                          size: 50,
+                        ),
+                        name: "More",
                       ),
-                      name: "More",
+                      itemBuilder: (context){
+                        return [
+                          PopupMenuItem(
+                            child: Text("Log Out"),
+                            value: "logout",
+                          )
+                        ];
+                      },
+                      onSelected: (val) async {
+                        if(val == "logout"){
+                          FlutterAccountKit akt = new FlutterAccountKit();
+                          await akt.logOut();
+                          StoreProvider.of<AppState>(context).dispatch(SetGlobalUser(null));
+                          Navigator.of(context).pushNamedAndRemoveUntil("/",ModalRoute.withName('/'));
+                        }
+                      },
                     )
                   ],
                 ),
@@ -351,43 +372,58 @@ class _ProfilePageState extends State<ProfilePage>{
                       builder: (context, AsyncSnapshot<List<Classmate>> snapshot){
                         if(snapshot.hasData && !snapshot.hasError && snapshot.data != null){
                           var classmates = snapshot.data;
-                          return GridView.builder(
-                            itemCount: classmates.length > 6 ? 6 : classmates.length,
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                            shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
-                            itemBuilder: (context, index){
-                              return Stack(
-                                children: <Widget>[
-                                  Container(
-                                    child: FadeInImage.assetNetwork(
-                                      placeholder: "assets/images/logo.png",
-                                      image: classmates[index].profilePicture,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    margin: EdgeInsets.all(5),
-                                  ),
-                                  Positioned(
-                                    child: Container(
-                                      color: Colors.white30,
-                                      child: Text(
-                                        "${classmates[index].firstName} ${classmates[index].lastName}",
-                                        style: TextStyle(
-                                            color: Colors.white
-                                        ),
-                                        textAlign: TextAlign.center,
+                          if(classmates?.length>0){
+                            return GridView.builder(
+                              itemCount: classmates.length > 6 ? 6 : classmates.length,
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              itemBuilder: (context, index){
+                                return Stack(
+                                  children: <Widget>[
+                                    Container(
+                                      child: FadeInImage.assetNetwork(
+                                        placeholder: "assets/images/dummy.png",
+                                        image: classmates[index].profilePicture,
+                                        fit: BoxFit.cover,
                                       ),
-                                      padding: EdgeInsets.all(4),
+                                      margin: EdgeInsets.all(5),
                                     ),
-                                    bottom: 5,
-                                    width: MediaQuery.of(context).size.width/3 - 10,
-                                  )
-                                ],
-                              );
-                            },
-                          );
+                                    Positioned(
+                                      child: Container(
+                                        color: Colors.white30,
+                                        child: Text(
+                                          "${classmates[index].firstName} ${classmates[index].lastName}",
+                                          style: TextStyle(
+                                              color: Colors.white
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        padding: EdgeInsets.all(4),
+                                      ),
+                                      bottom: 5,
+                                      width: MediaQuery.of(context).size.width/3 - 10,
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          }else{
+                            return Container(
+                              child: Text(
+                                  "No Classmate",
+                                textAlign: TextAlign.center,
+                              ),
+                              width: double.infinity,
+                            );
+                          }
                         }
-                        return CircularProgressIndicator();
+                        return Container(
+                          child: Column(
+                            children: <Widget>[CircularProgressIndicator()],
+                          ),
+                          width: double.infinity,
+                        );
                       },
                     ),
                     Padding(
@@ -457,7 +493,7 @@ class _ProfilePageState extends State<ProfilePage>{
     );
   }
 
-  Future<void> _uploadProfile(BuildContext context, File file, User user) async {
+  Future<void> _uploadProfile(File file, User user) async {
     var url = ConfigWrapper.of(context).baseUrl;
     url = "$url/api/v1/me/profilepicutre";
     FormData formData = FormData.fromMap({
@@ -496,7 +532,9 @@ class _ProfilePageState extends State<ProfilePage>{
       pr.dismiss();
       debugPrint("code ${response.data}");
       if(response.statusCode == 200){
-
+        var user = User.fromJson(response.data['data']);
+        print("user ${user?.profilePicture}");
+        StoreProvider.of<AppState>(context).dispatch(SetGlobalUser(user));
       }
     }catch(error){
       print("error $error");

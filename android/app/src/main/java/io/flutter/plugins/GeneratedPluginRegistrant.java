@@ -3,6 +3,7 @@ package io.flutter.plugins;
 import io.flutter.plugin.common.PluginRegistry;
 import com.mr.flutter.plugin.filepicker.FilePickerPlugin;
 import com.peerwaya.flutteraccountkit.FlutterAccountKitPlugin;
+import zhuoyuan.li.fluttershareme.FlutterShareMePlugin;
 import io.flutter.plugins.imagepicker.ImagePickerPlugin;
 
 /**
@@ -15,6 +16,7 @@ public final class GeneratedPluginRegistrant {
     }
     FilePickerPlugin.registerWith(registry.registrarFor("com.mr.flutter.plugin.filepicker.FilePickerPlugin"));
     FlutterAccountKitPlugin.registerWith(registry.registrarFor("com.peerwaya.flutteraccountkit.FlutterAccountKitPlugin"));
+    FlutterShareMePlugin.registerWith(registry.registrarFor("zhuoyuan.li.fluttershareme.FlutterShareMePlugin"));
     ImagePickerPlugin.registerWith(registry.registrarFor("io.flutter.plugins.imagepicker.ImagePickerPlugin"));
   }
 

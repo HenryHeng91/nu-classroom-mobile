@@ -289,11 +289,10 @@ class _SignUpPageState extends State<SignUpPage>{
     loading.add(true);
     var updateUser = await UserAPIClient.update(context, user, _viewModel.user.accessToken);
     loading.add(false);
-//    if(updateUser != null) {
-//      _viewModel.setGlobalUser(user);
-//      Navigator.of(context).pushReplacementNamed("/home");
-//    }
-    Navigator.of(context).pushReplacementNamed("/home");
+    if(updateUser != null) {
+      _viewModel.setGlobalUser(user);
+      Navigator.of(context).pushReplacementNamed("/home");
+    }
   }
 }
 

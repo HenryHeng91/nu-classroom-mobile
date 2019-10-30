@@ -26,21 +26,26 @@ class CommentItem extends StatelessWidget{
             margin: EdgeInsets.only(
                 right: 10
             ),
-            child: Container(
+            child: ClipRRect(
+              child: FadeInImage.assetNetwork(
+                placeholder: "assets/images/dummy.png",
+                image: comment.user.profilePicture,
                 width: 40,
                 height: 40,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(comment.user.profilePicture ?? "")
-                    ),
-                    shape: BoxShape.circle
-                )
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(54)),
             ),
           ),
           Expanded(
             child: Container(
               child: Text(comment.commentDetail),
-              padding: EdgeInsets.all(5),
+              padding: EdgeInsets.only(
+                left: 5,
+                right: 5,
+                top: 10,
+                bottom: 10
+              ),
               decoration: BoxDecoration(
                 color: Colors.black12,
                 borderRadius: BorderRadius.all(Radius.circular(5))

@@ -67,7 +67,7 @@ class _PostToClassPageState extends State<PostToClassPage>{
                                     ),
                                   ),
                                   onTap: (){
-                                    Navigator.of(context).pop(classes[index].id);
+                                    Navigator.of(context).pop(classes[index]);
                                   },
                                 );
                               },
@@ -119,7 +119,7 @@ class _PostToClassPageState extends State<PostToClassPage>{
                                       ),
                                     ),
                                     onTap: (){
-                                      Navigator.of(context).pop([classes[index].id]);
+                                      Navigator.of(context).pop(classes[index]);
                                     },
                                   );
                                 },

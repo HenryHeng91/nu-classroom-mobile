@@ -4,6 +4,7 @@ import 'package:flutter_kickstart/config_wrapper.dart';
 import 'package:flutter_kickstart/models/app_state.dart';
 import 'package:flutter_kickstart/models/models.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:redux/redux.dart';
@@ -11,7 +12,8 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 enum action{
   join,
-  leave
+  leave,
+  share
 }
 
 class ClassItem extends StatefulWidget{
@@ -105,16 +107,29 @@ class _ClassItemState extends State<ClassItem>{
                               color: Colors.white,
                             ),
                             itemBuilder: (context) => [
+//                              PopupMenuItem<action>(
+//                                child: Text("Join Class"),
+//                                value: action.join,
+//                              ),
                               PopupMenuItem<action>(
-                                child: Text("Join Class"),
-                                value: action.join,
+                                child: Text("Leave Class"),
+                                value: action.leave,
+                              ),
+                              PopupMenuItem<action>(
+                                child: Text("Share Class"),
+                                value: action.share,
                               )
                             ],
-                            onSelected: (val){
+                            onSelected: (val) async {
                               if(val == action.join){
                                 _joinClass(context, viewModel.user, widget.classItem, val);
                               }else if(val == action.leave){
                                 _leaveClass(context, viewModel.user, widget.classItem, val);
+                              }else if(val == action.share){
+                                var response = await FlutterShareMe().shareToSystem(msg: widget.classItem.url);
+                                if (response == 'success') {
+                                  print('navigate success');
+                                }
                               }
                             },
                           ),

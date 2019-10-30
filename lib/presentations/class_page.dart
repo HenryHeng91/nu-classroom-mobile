@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter_kickstart/api_client/class_api_client.dart';
 import 'package:flutter_kickstart/config_wrapper.dart';
+import 'package:flutter_kickstart/containers/bottom_sheet_create_class.dart';
 import 'package:flutter_kickstart/containers/class_item.dart';
 import 'package:flutter_kickstart/custom_widgets/selected_class_filter.dart';
 import 'package:flutter_kickstart/custom_widgets/un_selected_class_filter.dart';
@@ -11,8 +13,16 @@ import 'package:flutter_kickstart/models/app_state.dart';
 import 'package:flutter_kickstart/models/models.dart';
 import 'package:flutter_kickstart/presentations/class_activity_page.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_share_me/flutter_share_me.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:redux/redux.dart';
 import 'package:http/http.dart' as http;
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+enum action{
+  join,
+  leave
+}
 
 class ClassPage extends StatefulWidget{
   @override
@@ -47,14 +57,14 @@ class _ClassPageState extends State<ClassPage>{
       },
       builder: (context, _ViewModel viewModel){
         return Scaffold(
-          appBar: _buildAppBar(),
+          appBar: _buildAppBar(viewModel),
           body: _buildBody(viewModel),
         );
       },
     );
   }
 
-  AppBar _buildAppBar(){
+  AppBar _buildAppBar(_ViewModel _viewModel){
     return AppBar(
       title: new Text(
         "Classes",
@@ -67,7 +77,45 @@ class _ClassPageState extends State<ClassPage>{
         IconButton(
           icon: Icon(Icons.add),
           onPressed: (){
-            Navigator.of(context).pushNamed("/createclass");
+            showModalBottomSheet(
+              context: context,
+              builder: (context){
+                return BottomSheetCreateClass(
+                  onChooseCreate: (){
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushNamed("/createclass");
+                  },
+                  onChooseJoin: () async {
+                    Navigator.of(context).pop();
+                    showDialog(
+                      context: context,
+                      builder: (context){
+                        String classId="";
+                        return AlertDialog(
+                          title: Text("Join Class"),
+                          content: TextField(
+                            decoration: InputDecoration(
+                              hintText: "Input Class ID"
+                            ),
+                            onChanged: (val){
+                              classId = val;
+                            },
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text("Join"),
+                              onPressed: () async {
+                                await _joinClass(context, _viewModel.user, classId, action.join);
+                              },
+                            )
+                          ],
+                        ) ;
+                      }
+                    );
+                  },
+                );
+              }
+            );
           },
         )
       ],
@@ -158,7 +206,7 @@ class _ClassPageState extends State<ClassPage>{
                           onTap: (){
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context)=>ClassActivityPage(classId: classes[index].id,)
+                                builder: (context)=>ClassActivityPage(myClass: classes[index],)
                               )
                             );
                           },
@@ -188,6 +236,75 @@ class _ClassPageState extends State<ClassPage>{
         )
       ],
     );
+  }
+
+  Future<void> _joinClass(BuildContext context, User user, String classId, action action)async{
+    var pr = ProgressDialog(
+        context,
+        type: ProgressDialogType.Normal,
+        isDismissible: false,
+        showLogs: false
+    );
+    pr.style(
+        progressWidget: Padding(
+          child: CircularProgressIndicator(),
+          padding: EdgeInsets.all(10),
+        ),
+        message: "Joining class ..."
+    );
+    pr.show();
+    String url = ConfigWrapper.of(context).baseUrl;
+    url = "$url/api/v1/classes/${classId}/join";
+    var response = await http.get(
+        url,
+        headers: {
+          "access-token": user.accessToken
+        }
+    );
+    pr.dismiss();
+    if(response.statusCode == 200){
+      Alert(
+        context: context,
+        type: AlertType.success,
+        title: "SUCCESS",
+        desc: "You have join class successfully!.",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "OK",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            color: Colors.green,
+            onPressed: (){
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            width: 120,
+          )
+        ],
+      ).show();
+    }else {
+      Alert(
+        context: context,
+        type: AlertType.error,
+        title: "SORRY",
+        desc: "Something went wrong! Please try again later!.",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "OK",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            color: Colors.green,
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            width: 120,
+          )
+        ],
+      ).show();
+    }
   }
 
   Future<void> _loadClass(BuildContext context, User user, filter classFilter,int page)async{

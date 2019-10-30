@@ -11,11 +11,7 @@ class PostAPIClient{
     url = "$url/api/v1/posts";
     try{
       var temp = post.toJson();
-      post.toJson().forEach((key,value){
-        if(value == null){
-          temp.remove(key);
-        }
-      });
+
       var response = await http.post(
           url,
           headers: {
@@ -31,6 +27,7 @@ class PostAPIClient{
       }
       return false;
     }catch(error){
+      print("error $error");
       return false;
     }
   }
@@ -46,6 +43,7 @@ class PostAPIClient{
     if(response.statusCode == 200) {
       var json = jsonDecode(response.body)['data'] as List;
       return json.map((post){
+        print("post $post");
         return Post.fromJson(post);
       }).toList();
     }

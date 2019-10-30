@@ -10,8 +10,9 @@ class PostPhoto extends StatelessWidget{
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.width,
-      child: Image.asset(
-        "assets/images/logo.png"
+      child: FadeInImage.assetNetwork(
+          placeholder: "assets/images/logo.png",
+          image: post.file.source
       ),
     );
   }

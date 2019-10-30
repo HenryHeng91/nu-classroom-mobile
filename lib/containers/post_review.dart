@@ -142,6 +142,7 @@ class _PostReviewState extends State<PostReview>{
     print(response.body);
     if(response.statusCode == 200) {
       setState(() {
+        this.post.likeCount++;
         this.post.isAlreadyLike = true;
       });
     }

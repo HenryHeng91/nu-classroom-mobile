@@ -43,15 +43,17 @@ class UserAPIClient{
     try{
       print(jsonEncode(user));
       String url = ConfigWrapper.of(context).baseUrl;
-      var response = await http.put(
+      var response = await http.post(
           "$url/api/v1/me",
           headers: {
-            "access-token": accessToken
+            "access-token": accessToken,
+            "Content-Type": "application/json"
           },
           body: jsonEncode(
               user
           )
       );
+      print("response ${response.body}");
       if(response.statusCode == 200) {
         var json = jsonDecode(response.body);
         var user = User.fromJson(json['data']);

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_kickstart/presentations/category_page.dart';
 import 'package:flutter_kickstart/presentations/create_class_page.dart';
+import 'package:flutter_kickstart/presentations/create_exam.dart';
 import 'package:flutter_kickstart/presentations/create_post_page.dart';
+import 'package:flutter_kickstart/presentations/create_question.dart';
 import 'package:flutter_kickstart/presentations/edit_profile_page.dart';
 import 'package:flutter_kickstart/presentations/main_page.dart';
 import 'package:flutter_kickstart/presentations/post_to_class_page.dart';
@@ -10,6 +12,7 @@ import 'package:flutter_kickstart/presentations/profile_page.dart';
 import 'package:flutter_kickstart/presentations/sign_in_page.dart';
 import 'package:flutter_kickstart/presentations/sign_up_page.dart';
 import 'package:flutter_kickstart/presentations/splash_screen.dart';
+import 'package:flutter_kickstart/presentations/tutorial_screen.dart';
 import 'package:flutter_kickstart/presentations/verify_code_page.dart';
 import 'package:flutter_kickstart/presentations/visibility_page.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -55,6 +58,7 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           "/":(context)=>SplashScreen(),
+          "/tutorial":(context)=>TutorialScreen(),
           "/home":(context)=>MainPage(),
           "/me":(context)=>ProfilePage(),
           "/signin":(context)=>SignInPage(),
@@ -66,7 +70,9 @@ class MyApp extends StatelessWidget {
           "/postto": (context)=>PostToPage(),
           "/editprofile":(context)=>EditProfilePage(),
           "/createclass":(context)=>CreateClassPage(),
-          "/category":(context)=>CategoryPage()
+          "/category":(context)=>CategoryPage(),
+          "/createquestion":(context)=>CreateQuestion(),
+          "/createexam":(context)=>CreateExam(),
         },
       ),
     );

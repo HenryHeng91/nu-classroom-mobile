@@ -52,12 +52,14 @@ class _ProfileActivityState extends State<ProfileActivity>{
 
   Future<void> _loadFeed(BuildContext context, User user, int page)async{
     String url = ConfigWrapper.of(context).baseUrl;
+    print("$url/api/v1/posts?page=$page");
     var response = await http.get(
         "$url/api/v1/posts?page=$page",
         headers: {
           "access-token": user.accessToken
         }
     );
+    debugPrint("response ${response.body}");
     if(response.statusCode == 200) {
       var json = jsonDecode(response.body)['data'] as List;
       List<Post> posts = json.map((post){
@@ -66,6 +68,7 @@ class _ProfileActivityState extends State<ProfileActivity>{
       this.postStream.add(posts);
       print("post page $page");
     }
+    this.postStream.add(List());
   }
 }
 

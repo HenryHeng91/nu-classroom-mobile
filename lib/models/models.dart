@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
 
 //command generate json serializable flutter packages pub run build_runner build --delete-conflicting-outputs
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class User{
   String id;
   String username;
@@ -40,7 +40,7 @@ class User{
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Classmate{
   String id;
   String username;
@@ -66,7 +66,7 @@ class Classmate{
   factory Classmate.fromJson(Map<String, dynamic> json) => _$ClassmateFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Class{
   String id;
   String classTitle;
@@ -95,7 +95,7 @@ class Class{
   factory Class.fromJson(Map<String, dynamic> json) => _$ClassFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Instructor{
   final int id;
   final String profile_pic;
@@ -118,7 +118,7 @@ class Instructor{
   factory Instructor.fromJson(Map<String, dynamic> json) => _$InstructorFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Category{
   final int id;
   final String name;
@@ -130,7 +130,7 @@ class Category{
   factory Category.fromJson(Map<String, dynamic> json) => _$CategoryFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Background{
   final int id;
   final String name;
@@ -140,7 +140,7 @@ class Background{
   factory Background.fromJson(Map<String, dynamic> json) => _$BackgroundFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Organization{
   final int id;
   final String name;
@@ -153,7 +153,7 @@ class Organization{
   factory Organization.fromJson(Map<String, dynamic> json) => _$OrganizationFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Post{
   final String id;
   final String detail;
@@ -161,14 +161,14 @@ class Post{
   final String classId;
   final String access;
   final String postType;
-  final Classwork classwork;
+  final CreateClasswork classwork;
   final String status;
-  final int viewCount;
+  int viewCount;
   final List<Classmate> viewers;
-  final int likeCount;
+  int likeCount;
   final List<Classmate> likers;
-  final int commentCount;
-  final String file;
+  int commentCount;
+  final FileResponse file;
   final String createDate;
   bool isAlreadyLike;
 
@@ -177,18 +177,35 @@ class Post{
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
+class FileResponse{
+  int id;
+  String display_name;
+  String description;
+  String source;
+  String file_extention;
+  String file_name;
+
+  FileResponse(this.id, this.display_name, this.description, this.source, this.file_extention, this.file_name);
+  factory FileResponse.fromJson(Map<String, dynamic> json) => _$FileResponseFromJson(json);
+
+
+}
+
+@JsonSerializable(includeIfNull:false)
 class Classwork{
   final String id;
   final String title;
   final String description;
+  final String examDuration;
+  final String endDate;
 
-  Classwork(this.id, this.title, this.description);
+  Classwork(this.id, this.title, this.description, this.examDuration, this.endDate);
 
   factory Classwork.fromJson(Map<String, dynamic> json) => _$ClassworkFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class CreatePost{
   String detail;
   String classId;
@@ -212,34 +229,45 @@ class CreatePost{
 
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class CreateClasswork{
-  String questiongType;
+  String questionId;
+  String questionType;
   String title;
   String description;
   String fileId;
+  CreateAnswer answer;
+  List<CreateAnswerItem> answers;
+  String startDate;
+  String endDate;
+  int examDuration;
+  String showResultAt;
+  int isAutoGrade;
+  List<CreateClasswork> questions;
 
 
-  CreateClasswork({this.questiongType, this.title, this.description,
-      this.fileId});
+  CreateClasswork({this.questionId,this.questionType, this.title, this.description, this.fileId,
+      this.answer,this.answers, this.startDate, this.endDate, this.examDuration,
+      this.showResultAt, this.isAutoGrade, this.questions});
 
   factory CreateClasswork.fromJson(Map<String, dynamic> json) => _$CreateClassworkFromJson(json);
   Map<String, dynamic> toJson() => _$CreateClassworkToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class CreateAnswer{
   int correctAnswerIndex;
+  String answerDetail;
   List<CreateAnswerItem> items;
 
 
-  CreateAnswer({this.correctAnswerIndex, this.items});
+  CreateAnswer({this.correctAnswerIndex, this.items, this.answerDetail});
 
   factory CreateAnswer.fromJson(Map<String, dynamic> json) => _$CreateAnswerFromJson(json);
   Map<String, dynamic> toJson() => _$CreateAnswerToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class CreateAnswerItem{
   String answerDetail;
 
@@ -249,7 +277,7 @@ class CreateAnswerItem{
   Map<String, dynamic> toJson() => _$CreateAnswerItemToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class CreateClass{
   String classTitle;
   String description;
@@ -269,7 +297,7 @@ class CreateClass{
   Map<String, dynamic> toJson() => _$CreateClassToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull:false)
 class Comment{
   String id;
   Classmate user;

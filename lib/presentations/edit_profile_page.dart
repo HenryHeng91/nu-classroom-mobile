@@ -284,11 +284,10 @@ class _EditProfilePageState extends State<EditProfilePage>{
     loading.add(true);
     var updateUser = await UserAPIClient.update(context, user, _viewModel.user.accessToken);
     loading.add(false);
-//    if(updateUser != null) {
-//      _viewModel.setGlobalUser(user);
-//      Navigator.of(context).pushReplacementNamed("/home");
-//    }
-    Navigator.of(context).pop();
+    if(updateUser != null) {
+      _viewModel.setGlobalUser(updateUser);
+      Navigator.of(context).pushReplacementNamed("/home");
+    }
   }
 }
 

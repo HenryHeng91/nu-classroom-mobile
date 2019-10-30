@@ -11,6 +11,8 @@ import 'package:flutter_kickstart/config_wrapper.dart';
 import 'package:flutter_kickstart/containers/action_item.dart';
 import 'package:flutter_kickstart/models/app_state.dart';
 import 'package:flutter_kickstart/models/models.dart';
+import 'package:flutter_kickstart/presentations/create_exam.dart';
+import 'package:flutter_kickstart/presentations/create_question.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -18,6 +20,9 @@ import 'package:redux/redux.dart';
 import 'package:http/http.dart' as http;
 
 class CreatePostPage extends StatefulWidget{
+  final Class myClass;
+
+  const CreatePostPage({Key key, this.myClass}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _CreatePostPageState();
@@ -28,10 +33,12 @@ class _CreatePostPageState extends State<CreatePostPage>{
   CreatePost createPost = CreatePost(
     postType: "POST",
     access: "PUBLIC",
-    classId: "5d40d707d4f27"
   );
+  var chooseClass;
+  var classWork;
   var descriptionController = TextEditingController();
   var attachmentStream = StreamController<Attachment>();
+  var classworkStream = StreamController<CreatePost>();
   Attachment attachment;
 
   @override
@@ -39,6 +46,15 @@ class _CreatePostPageState extends State<CreatePostPage>{
     descriptionController.dispose();
     attachmentStream.close();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if(widget.myClass != null){
+      chooseClass = widget.myClass;
+      createPost.classId = widget.myClass.id;
+    }
   }
 
   @override
@@ -107,17 +123,15 @@ class _CreatePostPageState extends State<CreatePostPage>{
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    Container(
-                      width: 100,
-                      height: 100,
-                      child: Card(
-                        elevation: 4,
-                        shape: CircleBorder(),
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.network(
-                          viewModel.user.profilePicture,
-                        ),
+                    ClipRRect(
+                      child: FadeInImage.assetNetwork(
+                        placeholder: "assets/images/dummy.png",
+                        image: viewModel.user.profilePicture,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
                       ),
+                      borderRadius: BorderRadius.all(Radius.circular(54)),
                     ),
                     Expanded(
                       child: Container(
@@ -143,7 +157,11 @@ class _CreatePostPageState extends State<CreatePostPage>{
                                     child: Row(
                                       children: <Widget>[
                                         Container(
-                                          child: Text(createPost.classId != null ? "Class" : "Your feed"),
+                                          child: Text(
+                                            createPost.classId != null ? chooseClass.classTitle : "Your feed",
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          width: 50,
                                         ),
                                         ImageIcon(
                                             AssetImage("assets/icons/dropdown.png")
@@ -164,12 +182,13 @@ class _CreatePostPageState extends State<CreatePostPage>{
                                     var postto = await Navigator.of(context).pushNamed("/postto");
                                     if(postto != null){
                                       if(postto == "class"){
-                                        var classId = await Navigator.of(context).pushNamed("/posttoclass");
-                                        if(classId!=null){
-                                          createPost.classId = classId;
+                                        chooseClass = await Navigator.of(context).pushNamed("/posttoclass");
+                                        print("posttoclass $chooseClass");
+                                        if(chooseClass!=null){
+                                          createPost.classId = chooseClass.id;
                                         }
                                       }else{
-                                        createPost.classId = "5d40d707d4f27";
+                                        createPost.classId = null;
                                       }
                                     }
                                   },
@@ -234,7 +253,7 @@ class _CreatePostPageState extends State<CreatePostPage>{
                         child: Row(
                           children: <Widget>[
                             Container(
-                              child: attachment.FileType == "File" ? Image.asset("assets/images/pdf.png") : Image.file(attachment.file),
+                              child: attachment.FileType == "Photo" ? Image.file(attachment.file) : Image.asset("assets/images/question.png"),
                               width: 100,
                               height: 100,
                             ),
@@ -283,6 +302,66 @@ class _CreatePostPageState extends State<CreatePostPage>{
                     return SizedBox.shrink();
                   },
                 ),
+                StreamBuilder(
+                  stream: classworkStream.stream,
+                  builder: (context, AsyncSnapshot<CreatePost> snapshot){
+                    if(snapshot.hasData && !snapshot.hasError && snapshot.data != null){
+                      var classwork = snapshot.data;
+                      if(classwork.classwork != null){
+                        return Container(
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                child: Image.asset("assets/images/question.png"),
+                                width: 100,
+                                height: 100,
+                              ),
+                              VerticalDivider(
+                                width: 1,
+                                color: Colors.black,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                      minHeight: 100
+                                  ),
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          left: BorderSide(
+                                              width: 1,
+                                              color: Colors.black
+                                          )
+                                      )
+                                  ),
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        classwork.postType,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(5)),
+                              border: Border.all(
+                                  color: Colors.black,
+                                  width: 1
+                              )
+                          ),
+                        );
+                      }
+                    }
+                    return SizedBox.shrink();
+                  },
+                ),
                 Container(
                   padding: EdgeInsets.all(10),
                   child: Column(
@@ -293,9 +372,9 @@ class _CreatePostPageState extends State<CreatePostPage>{
                             AssetImage("assets/icons/add.png")
                         ),
                         onTap: () async {
-                          var classId = await Navigator.of(context).pushNamed("/posttoclass");
-                          if(classId!=null){
-                            createPost.classId = classId;
+                          chooseClass = await Navigator.of(context).pushNamed("/posttoclass");
+                          if(chooseClass!=null){
+                            createPost.classId = chooseClass.id;
                           }
                         },
                       ),
@@ -326,10 +405,37 @@ class _CreatePostPageState extends State<CreatePostPage>{
                             AssetImage("assets/icons/question.png")
                         ),
                         onTap: () async {
-                          var classId = await Navigator.of(context).pushNamed("/posttoclass");
-                          if(classId!=null){
-                            createPost.classId = classId;
+                          if(createPost.postType == "EXAM"){
+                            createPost.classwork = null;
                           }
+                          classWork = await Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context)=>CreateQuestion(createClasswork: createPost.classwork,)
+                          ));
+                          if(classWork != null){
+                            createPost.classwork = classWork;
+                            createPost.postType = "QUESTION";
+                          }
+                          classworkStream.add(createPost);
+                        },
+                      ),
+                      Divider(),
+                      ActionItem(
+                        title: "Create Exam",
+                        icon: ImageIcon(
+                            AssetImage("assets/icons/question.png")
+                        ),
+                        onTap: () async {
+                          if(createPost.postType == "QUESTION"){
+                            createPost.classwork = null;
+                          }
+                          classWork = await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context)=>CreateExam(createClasswork: createPost.classwork,)
+                          ));
+                          if(classWork != null){
+                            createPost.classwork = classWork;
+                            createPost.postType = "EXAM";
+                          }
+                          classworkStream.add(createPost);
                         },
                       )
                     ],
@@ -402,9 +508,9 @@ class _CreatePostPageState extends State<CreatePostPage>{
           },
         ),
       );
-      debugPrint("code ${response.data}");
-      if(response.statusCode == 200){
-        return jsonDecode(response.data)['data']['id'];
+      debugPrint("code ${response.data['data']}");
+      if(response.statusCode == 201){
+        return response.data['data']['id'];
       }
     }catch(error){
       print("error $error");

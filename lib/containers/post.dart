@@ -61,11 +61,6 @@ class _PostWidgetState extends State<PostWidget>{
                     postQuestionSize: PostQuestionSize.big,
                     post: widget.post,
                   );
-                case "FILE":
-                  return PostFile(
-                    postFileSize: PostFileSize.big,
-                    post: widget.post,
-                  );
                 case "ASSIGNMENT":
                   return PostAssignment(
                     post: widget.post,
@@ -75,10 +70,15 @@ class _PostWidgetState extends State<PostWidget>{
                     post: widget.post,
                   );
                 default:
-//                  return PostPhoto(
-//                    post: widget.post,
-//                  );
-                  return SizedBox.shrink();
+                  return widget.post.file != null ? (widget.post.file.file_extention == 'jpg' || widget.post.file.file_extention == 'png' ?
+                  PostPhoto(
+                    post: widget.post,
+                  ):
+                  PostFile(
+                    postFileSize: PostFileSize.big,
+                    post: widget.post,
+                  )
+                  ) : SizedBox.shrink();
               }
             },
           ),

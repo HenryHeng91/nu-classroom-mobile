@@ -27,15 +27,17 @@ class PostHeader extends StatelessWidget{
             margin: EdgeInsets.only(
               right: 10
             ),
-            child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(post.user.profilePicture ?? "")
-                    ),
-                    shape: BoxShape.circle
-                )
+            child: Center(
+              child: ClipRRect(
+                child: FadeInImage.assetNetwork(
+                  placeholder: "assets/images/dummy.png",
+                  image: post.user.profilePicture,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(54)),
+              ),
             ),
           ),
           Expanded(

@@ -62,19 +62,15 @@ class _HomePageState extends State<HomePage>{
           child: Container(
             width: 54,
             child: Center(
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(viewModel.user.profilePicture)
-                    ),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                        color: Colors.black,
-                        width: 1
-                    )
+              child: ClipRRect(
+                child: FadeInImage.assetNetwork(
+                  placeholder: "assets/images/dummy.png",
+                  image: viewModel.user.profilePicture,
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.cover,
                 ),
+                borderRadius: BorderRadius.all(Radius.circular(54)),
               ),
             ),
           ),
@@ -98,15 +94,17 @@ class _HomePageState extends State<HomePage>{
               width: double.infinity,
               child: Row(
                 children: <Widget>[
-                  Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: NetworkImage(viewModel.user.profilePicture ?? "")
-                          ),
-                          shape: BoxShape.circle
-                      )
+                  Center(
+                    child: ClipRRect(
+                      child: FadeInImage.assetNetwork(
+                        placeholder: "assets/images/dummy.png",
+                        image: viewModel.user.profilePicture,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(54)),
+                    ),
                   ),
                   Container(
                     child: Text(
@@ -143,13 +141,30 @@ class _HomePageState extends State<HomePage>{
                 List<Post> posts = snapshot.data;
                 return NotificationListener<ScrollNotification>(
                   child: RefreshIndicator(
-                    child: ListView.builder(
-                      itemCount: posts.length,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (context, index){
-                        return PostWidget(
-                          post: posts[index],
-                        );
+                    child: Builder(
+                      builder: (context){
+                        if(posts.length>0){
+                          return ListView.separated(
+                            itemCount: posts.length,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            itemBuilder: (context, index){
+                              return PostWidget(
+                                post: posts[index],
+                              );
+                            },
+                            separatorBuilder: (context, index){
+                              return Divider(
+                                height: 1,
+                              );
+                            },
+                          );
+                        }else{
+                          return ListView(
+                            children: <Widget>[
+                              Image.asset("assets/images/no_post.png")
+                            ],
+                          );
+                        }
                       },
                     ),
                     onRefresh: (){
